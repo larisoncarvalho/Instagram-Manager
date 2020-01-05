@@ -212,13 +212,21 @@ if __name__ == '__main__':
         return usernames
 
     def unfollow(users):
-        
+        # Explicitly limit the number of people unfollowed at a time to avoid hitting instagrams limit
+        limit=150
         for user in users:
-            res = api.friendships_destroy(user)
-            if(res.status != "ok"):
+            if limit == 0:
+                break
+            user_=user.split(delim)[0]
+            res = api.friendships_destroy(user_)
+            limit = limit-1
+            if(res["status"] != "ok"):
                 failed.append(user)
-                print("Failed to unfollow "+get_usernames_from_userids(user))
-                
+                print("Failed to unfollow "+user.split(delim)[1])
+            else:
+                print("Unfollowed "+user.split(delim)[1])
+            
+            time.sleep(randrange(5,10))
 
         return failed
 
@@ -241,9 +249,8 @@ if __name__ == '__main__':
             for non in non_followers:
                 print(non.split(delim)[1])
             print(str(len(non_followers))+" users do not follow you back;'")
-            for non in non_followers:
-                print(non)
         if choice == "3":
+            print("Only 150 users will be unfollowed at a time to avoid hitting instagram's unfollowing limit")
             failed = unfollow(get_non_followers(userid)) 
             if failed == []:
                 print( "Unfollowed all successfully")
