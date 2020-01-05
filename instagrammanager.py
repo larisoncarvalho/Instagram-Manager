@@ -156,7 +156,8 @@ if __name__ == '__main__':
         user= User(result["user"]["pk"],result["user"]["username"],result["user"]["hd_profile_pic_url_info"]["url"],result["user"]["following_count"],result["user"]["follower_count"],result["user"]["is_private"],result["user"]["is_verified"],result["user"]["full_name"],result["user"]["biography"],result["user"]["is_business"],result["user"]["usertags_count"],result["user"]["media_count"])
         return user
     
-
+# get followers and following return in the format userid*ljc*username to avoid more api calls to get username
+    delim="*ljc*"
 
     def get_followers(userid):
         followers = []
@@ -171,7 +172,7 @@ if __name__ == '__main__':
             followers.extend(res.get("users",[]))
             next_max_id=res.get("next_max_id")
         for follow in followers:
-            followers_id.append(follow["pk"])
+            followers_id.append(str(follow["pk"])+delim+follow["username"])
         return followers_id
 
     def get_following(userid):
@@ -187,7 +188,7 @@ if __name__ == '__main__':
             following.extend(res.get("users",[]))
             next_max_id=res.get("next_max_id")
         for follow in following:
-            following_id.append(follow["pk"])
+            following_id.append(str(follow["pk"])+delim+follow["username"])
         return following_id
 
     def get_non_followers(userid):
@@ -204,8 +205,10 @@ if __name__ == '__main__':
     def get_usernames_from_userids(userid):
         usernames=[]
         for user in userid:
-            usernames.append(api.user_info(user)["user"]["username"])
-            time.sleep(randrange(1,3))
+            username= api.user_info(user)["user"]["username"]
+            # print(username)
+            usernames.append(username)
+            # time.sleep(randrange(1,2))
         return usernames
 
     def unfollow(users):
@@ -214,6 +217,8 @@ if __name__ == '__main__':
             res = api.friendships_destroy(user)
             if(res.status != "ok"):
                 failed.append(user)
+                print("Failed to unfollow "+get_usernames_from_userids(user))
+                
 
         return failed
 
@@ -232,13 +237,16 @@ if __name__ == '__main__':
         if choice == "1":
             print(len(get_non_followers(userid)))
         if choice == "2":
-            non_followers=get_usernames_from_userids(get_non_followers(userid))
+            non_followers = get_non_followers(userid)
+            for non in non_followers:
+                print(non.split(delim)[1])
+            print(str(len(non_followers))+" users do not follow you back;'")
             for non in non_followers:
                 print(non)
         if choice == "3":
             failed = unfollow(get_non_followers(userid)) 
             if failed == []:
-                print( "Unfollowed all successfull")
+                print( "Unfollowed all successfully")
             
 
     
