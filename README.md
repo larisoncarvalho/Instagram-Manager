@@ -7,6 +7,7 @@ Functions available right now:
 1. List number of users not following you back
 2. List usernames of users not following you back
 3. Unfollow users not following you back
+4. Check other similar pages to find potential followers
 
 More function to be added in the future.
 

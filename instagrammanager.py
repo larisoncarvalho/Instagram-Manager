@@ -218,7 +218,8 @@ if __name__ == '__main__':
             if limit == 0:
                 break
             user_=user.split(delim)[0]
-            res = api.friendships_destroy(user_)
+            print(user_)
+            res = api.friendships_destroy(int(user_))
             limit = limit-1
             if(res["status"] != "ok"):
                 failed.append(user)
@@ -226,9 +227,21 @@ if __name__ == '__main__':
             else:
                 print("Unfollowed "+user.split(delim)[1])
             
-            time.sleep(randrange(5,10))
+            time.sleep(randrange(10,15))
 
         return failed
+    
+    def findPeopleToFollow(account):
+        account=getUserDetails(account)
+        account_followers=get_followers(account.userid)
+        print(account.username+" has "+str(len(account_followers))+" followers")
+        for follower in account_followers:
+            follower=getUserDetails(follower.split(delim)[1])
+            if(follower.isPrivate):
+                if(follower.following > follower.followers):
+                    print(follower.username+" is PRIVATE and following "+str(follower.following)+" and has "+str(follower.followers)+" followers")
+            time.sleep(1)
+        
 
 
     userid = getUserDetails(args.username).userid
@@ -238,6 +251,7 @@ if __name__ == '__main__':
         print("1. Number of users not following back")
         print("2. Usernames of users not following back")
         print("3. Unfollow users not following back")
+        print("4. Find people to follow by checking other accounts")
         # add more functions here
         print("Ctrl +c to quit")
 
@@ -254,6 +268,9 @@ if __name__ == '__main__':
             failed = unfollow(get_non_followers(userid)) 
             if failed == []:
                 print( "Unfollowed all successfully")
+        if choice == "4":
+            username = input ("Enter the username of the account you want to check: ")
+            findPeopleToFollow(username)
             
 
     
