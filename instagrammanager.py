@@ -232,15 +232,21 @@ if __name__ == '__main__':
         return failed
     
     def findPeopleToFollow(account):
+        f= open(account+".txt","a")
         account=getUserDetails(account)
+        self_following= get_following(userid)
         account_followers=get_followers(account.userid)
         print(account.username+" has "+str(len(account_followers))+" followers")
         for follower in account_followers:
+            if follower in self_following:
+                continue
             follower=getUserDetails(follower.split(delim)[1])
             if(follower.isPrivate):
                 if(follower.following > follower.followers):
                     print(follower.username+" is PRIVATE and following "+str(follower.following)+" and has "+str(follower.followers)+" followers")
+                    f.write(follower.username+" is PRIVATE and following "+str(follower.following)+" and has "+str(follower.followers)+" followers\n")
             time.sleep(1)
+        f.close()
         
 
 
