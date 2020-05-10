@@ -202,6 +202,25 @@ if __name__ == '__main__':
         
         return non_followers
 
+    def get_private_non_followers(userid):
+        non_followers = []
+        following = get_following(userid)
+        followers = get_followers(userid)
+
+        start=True
+        for follow in following:
+
+            # if "tarun_sibal" in follow and start == False:
+            #     start=True
+                
+
+            if follow not in followers and start:
+                if getUserDetails(follow.split(delim)[1]).isPrivate == True:
+                    print(follow.split(delim)[1])
+                    non_followers.append(follow)
+        
+        return non_followers
+
     def get_usernames_from_userids(userid):
         usernames=[]
         for user in userid:
@@ -217,9 +236,9 @@ if __name__ == '__main__':
         for user in users:
             if limit == 0:
                 break
-            user_=user.split(delim)[0]
+            user_=int(user.split(delim)[0])
             print(user_)
-            res = api.friendships_destroy(int(user_))
+            res = api.friendships_destroy(user_,"")
             limit = limit-1
             if(res["status"] != "ok"):
                 failed.append(user)
@@ -234,10 +253,15 @@ if __name__ == '__main__':
     def findPeopleToFollow(account):
         f= open(account+".txt","a")
         account=getUserDetails(account)
-        self_following= get_following(userid)
+        self_following= get_following(26714596870)
         account_followers=get_followers(account.userid)
         print(account.username+" has "+str(len(account_followers))+" followers")
+        i=1
         for follower in account_followers:
+            if(i<190):
+                print("skipping "+str(i))
+                i=i+1
+                continue
             if follower in self_following:
                 continue
             follower=getUserDetails(follower.split(delim)[1])
@@ -245,12 +269,13 @@ if __name__ == '__main__':
                 if(follower.following > follower.followers):
                     print(follower.username+" is PRIVATE and following "+str(follower.following)+" and has "+str(follower.followers)+" followers")
                     f.write(follower.username+" is PRIVATE and following "+str(follower.following)+" and has "+str(follower.followers)+" followers\n")
-            time.sleep(1)
+                    f.flush()
+           # time.sleep(1)
         f.close()
         
 
 
-    userid = getUserDetails(args.username).userid
+    userid = getUserDetails("divinepalate").userid
     print("Instagram Manager\n")
     
     while True:
@@ -258,6 +283,7 @@ if __name__ == '__main__':
         print("2. Usernames of users not following back")
         print("3. Unfollow users not following back")
         print("4. Find people to follow by checking other accounts")
+        print("5. Usernames of private users not following back")
         # add more functions here
         print("Ctrl +c to quit")
 
@@ -268,7 +294,7 @@ if __name__ == '__main__':
             non_followers = get_non_followers(userid)
             for non in non_followers:
                 print(non.split(delim)[1])
-            print(str(len(non_followers))+" users do not follow you back;'")
+            print(str(len(non_followers))+" users do not follow you back")
         if choice == "3":
             print("Only 150 users will be unfollowed at a time to avoid hitting instagram's unfollowing limit")
             failed = unfollow(get_non_followers(userid)) 
@@ -277,6 +303,11 @@ if __name__ == '__main__':
         if choice == "4":
             username = input ("Enter the username of the account you want to check: ")
             findPeopleToFollow(username)
+        if choice == "5":
+            non_followers = get_private_non_followers(userid)
+            # for non in non_followers:
+            #     print(non.split(delim)[1])
+            print(str(len(non_followers))+" private users do not follow you back")
             
 
     
