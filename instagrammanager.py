@@ -5,6 +5,7 @@ import os.path
 import logging
 import argparse
 import time
+import wget
 from random import randrange
 try:
     from instagram_private_api import (
@@ -272,6 +273,59 @@ if __name__ == '__main__':
                     f.flush()
            # time.sleep(1)
         f.close()
+
+    def getStory(uname):
+        user = getUserDetails(uname)
+        story = api.user_story_feed(user.userid)
+        # print(story)
+        folder_name = uname+"-"+ str(time.time())
+        os.mkdir(folder_name)
+        for item in story["reel"]["items"]:
+            # if(item["media_type"]==1):
+            #     url = item["image_versions2"]["candidates"][0]["url"]
+            # else:
+            #     url = item["video_versions"]["candidates"][0]["url"]
+            if "video_versions" in item:
+                url = item["video_versions"][0]["url"]
+            else:
+                for img in item["image_versions2"]:
+                    key = img
+                    # url = img[0]["url"]
+                url = item["image_versions2"][key][0]["url"]
+
+            print(url)
+            
+            wget.download(url,out=folder_name)
+            print("Downloaded")
+
+
+    def getUserPosts(uname):
+        user = getUserDetails(uname)
+        posts = api.user_feed(user.userid)
+        folder_name = uname+"-posts-"+ str(time.time())
+        os.mkdir(folder_name)
+        for item in posts["items"]:
+            print(item["taken_at"])
+            if "image_versions2" in item:
+                url = item["image_versions2"]["candidates"][0]["url"]
+                print(url)
+                wget.download(url,out=folder_name)
+            if "carousel_media" in item:
+                for media in item["carousel_media"]:
+                    if "image_versions2" in media:
+                        url = media["image_versions2"]["candidates"][0]["url"]
+                        print(url)
+                        wget.download(url,out=folder_name)
+                    if "video_versions" in media:
+                        url = media["video_versions"][0]["url"]
+                        print(url)
+                        wget.download(url,out=folder_name)
+            if "video_versions" in item:
+                url = item["video_versions"][0]["url"]
+                print(url)
+                wget.download(url,out=folder_name)
+
+
         
 
 
@@ -284,6 +338,8 @@ if __name__ == '__main__':
         print("3. Unfollow users not following back")
         print("4. Find people to follow by checking other accounts")
         print("5. Usernames of private users not following back")
+        print("6. Download user story")
+        print("7. Download latest user posts")
         # add more functions here
         print("Ctrl +c to quit")
 
@@ -308,6 +364,12 @@ if __name__ == '__main__':
             # for non in non_followers:
             #     print(non.split(delim)[1])
             print(str(len(non_followers))+" private users do not follow you back")
+        if choice == "6":
+            username = input ("Enter the username of the account you want to download story: ")
+            getStory(username)
+        if choice == "7":
+            username = input ("Enter the username of the account you want to view posts: ")
+            getUserPosts(username)
             
 
     
