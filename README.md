@@ -8,6 +8,9 @@ Functions available right now:
 2. List usernames of users not following you back
 3. Unfollow users not following you back
 4. Check other similar pages to find potential followers
+5. Get usernames of only private users that dont follow you back
+6. Download a particular user's story
+7. Download a particular user's 12 latest posts
 
 More function to be added in the future.
 
