@@ -18,7 +18,11 @@ More function to be added in the future.
 
 This project uses the instagram_private_api by github user ping (https://github.com/ping/instagram_private_api)
 
-Install this using pip
+Install dependencies using 
+```pip install -r requirements.txt```
+
+Alternatively you can install this manually with pip
+```pip install wget```
 ```pip install git+https://git@github.com/ping/instagram_private_api.git@1.6.0```
 The above command might require git to be installed on your system so if you face a "git not found" error try installing git and re-run the command.
 
